@@ -1,65 +1,39 @@
 package org.example;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class Invoice {
+public class Invoice extends Items {
 
     private Company from;
     private Company to;
 
     private String invoiceNumber;
-    private Description des ;
-    private Integer Amount;
+
 
     private LocalDate date;
-    private Map<Description, Integer> items = new HashMap<>();
+
+    private List<Items> item = new ArrayList<>();
+
 
     private double total;
-    public Invoice(Company from, Company to, String invoiceNumber, Description des, Integer amount, LocalDate date) {
+
+    public Invoice(Company from, Company to, String invoiceNumber,  LocalDate date) {
+        super();
+
         this.from = from;
         this.to = to;
         this.invoiceNumber = invoiceNumber;
-        this.des = des;
-        Amount = amount;
         this.date = date;
-        this.items = items;
+
     }
 
-
-
-
-
-
-
-
-    public void addNewItem(Description des, Integer amount){
-       items.put(des, amount);
-    }
-
-
-    public double calculateInvoiceAmount(){
-        double sumofItems = 0;
-        for(Map.Entry<Description, Integer> a : items.entrySet()){
-           sumofItems += a.getValue();
-        }
-
-        setTotal(sumofItems);
-        return sumofItems;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
+    public void setItems(Items items) {
+        item.add(items);
     }
 
     public Company getFrom() {
         return from;
-    }
-
-    public double getTotal() {
-        return total;
     }
 
     public Company getTo() {
@@ -70,32 +44,15 @@ public class Invoice {
         return invoiceNumber;
     }
 
-    public Description getDes() {
-        return des;
-    }
-
-    public Integer getAmount() {
-        return Amount;
-    }
-
     public LocalDate getDate() {
         return date;
     }
 
-    public Map<Description, Integer> getItems() {
-        return items;
+    public List<Items> getItem() {
+        return item;
     }
 
-    @Override
-    public String toString() {
-        return "Invoice{" +
-                "from=" + from +
-                ", to=" + to +
-                ", invoiceNumber='" + invoiceNumber + '\'' +
-                ", des=" + des +
-                ", Amount=" + Amount +
-                ", date=" + date +
-                ", items=" + items +
-                '}';
+    public double getTotal() {
+        return total;
     }
 }
