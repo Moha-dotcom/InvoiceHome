@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +14,11 @@ public class Invoice {
     private Description des ;
     private Integer Amount;
 
-    private Date date;
+    private LocalDate date;
     private Map<Description, Integer> items = new HashMap<>();
 
     private double total;
-    public Invoice(Company from, Company to, String invoiceNumber, Description des, Integer amount, Date date) {
+    public Invoice(Company from, Company to, String invoiceNumber, Description des, Integer amount, LocalDate date) {
         this.from = from;
         this.to = to;
         this.invoiceNumber = invoiceNumber;
@@ -77,7 +78,7 @@ public class Invoice {
         return Amount;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
