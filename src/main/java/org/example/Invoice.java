@@ -1,7 +1,10 @@
 package org.example;
 
+import org.springframework.data.relational.core.sql.In;
+
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Invoice extends Items {
 
@@ -9,6 +12,8 @@ public class Invoice extends Items {
     private Company to;
 
     private String invoiceNumber;
+
+    private String logo;
 
 
     private LocalDate date;
@@ -18,14 +23,21 @@ public class Invoice extends Items {
 
     private double total;
 
-    public Invoice(Company from, Company to, String invoiceNumber,  LocalDate date) {
+    public Invoice(Company from, Company to, String invoiceNumber,  LocalDate date, String logo) {
         super();
+
+        this.logo = logo;
 
         this.from = from;
         this.to = to;
         this.invoiceNumber = invoiceNumber;
         this.date = date;
+        this.total = getTotal();
 
+    }
+
+    public String getLogo() {
+        return logo;
     }
 
     public void setItems(Items items) {
@@ -53,6 +65,10 @@ public class Invoice extends Items {
     }
 
     public double getTotal() {
-        return total;
+       double sum = item.stream()
+               .map(Items::getAmount)
+               .reduce(0 , Integer::sum);
+        return sum;
     }
+
 }

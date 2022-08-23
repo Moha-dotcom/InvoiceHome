@@ -5,15 +5,15 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.FileNotFoundException;
+import javax.print.Doc;
 import java.io.FileOutputStream;
-import java.util.stream.Stream;
+import java.io.IOException;
 
 public enum InvoiceTypes {
 
     DEAFAULT{
         @Override
-        public void ShowInvoice(String PDFName, Invoice invoice) throws FileNotFoundException, DocumentException {
+        public Document ShowInvoice(String PDFName, Invoice invoice) throws IOException, DocumentException {
 
             // Fonts Colors
             Font largeBold = new Font(Font.FontFamily.TIMES_ROMAN, 9,
@@ -36,10 +36,24 @@ public enum InvoiceTypes {
             document.setPageSize(PageSize.A4);
             document.setPageCount(4);
             float col = 50f;
-            float col1 = 110f;
-            float [] colwidth = {col};
+            float col1 =100f;
+            float [] colwidth = {col, col1};
 
             // Bill From
+
+
+            String imageLogo = invoice.getLogo();
+
+
+            com.itextpdf.text.Image image
+                     = com.itextpdf.text.Image.getInstance(imageLogo);
+
+            image.scaleToFit(150f, 150f);
+            image.setAlignment(Element.ALIGN_CENTER);
+
+
+
+
 
             PdfPTable from = new PdfPTable(colwidth);
             String billFrom = invoice.getFrom().getCompanyName() + "\n" +  invoice.getFrom().getCompanyAddress();
@@ -47,15 +61,36 @@ public enum InvoiceTypes {
             fromPhrase.setFont(new Font(Font.FontFamily.COURIER));
 
             from.setHorizontalAlignment(0);
-            from.setWidthPercentage(35);
+            from.setWidthPercentage(100);
+
+
 //            fromPhrase.setSpacingBefore(23);
 
 
+
+
+
+
             PdfPCell pdfPCell = new PdfPCell(fromPhrase);
-            pdfPCell.setVerticalAlignment(10);
-            pdfPCell.setPadding(20f);
+//            pdfPCell.setVerticalAlignment(10);
+            pdfPCell.setPadding(10f);
             pdfPCell.setBorderColor(new BaseColor(250, 47, 181));
+            pdfPCell.setBorder(0);
+            pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
             from.addCell(pdfPCell);
+
+            image.setWidthPercentage(20);
+
+
+            PdfPCell imagecell = new PdfPCell(image);
+            imagecell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            imagecell.setBorder(0);
+
+            from.addCell(imagecell);
+
+
+
+
 
 
             float [] toColWith = {130,290, 80};
@@ -212,34 +247,102 @@ public enum InvoiceTypes {
 
                 // Qty Row
 
-                desTable.addCell(new Phrase(String.valueOf(invoice.getItem().get(i).getQty()), desFonttype));
-                desTable.addCell(new Phrase(invoice.getItem().get(i).getDescription(), desFonttype));
-                desTable.addCell(new Phrase(String.valueOf(invoice.getItem().get(i).getUnitPrice()), desFonttype));
-                Phrase amountphrase =new Phrase(String.valueOf(invoice.getItem().get(i).getAmount()), desFonttype);
-                PdfPCell amountcell  = new PdfPCell(amountphrase);
-                amountcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                desTable.addCell(amountcell);
+                PdfPCell qtysec = new PdfPCell(new Phrase(String.valueOf(invoice.getItem().get(i).getQty()), desFonttype));
+                qtysec.setBorder(0);
+
+                desTable.addCell(qtysec);
+
+                PdfPCell itemdesSec = new PdfPCell(new Phrase(invoice.getItem().get(i).getDescription(), desFonttype));
+                itemdesSec.setBorder(0);
+                desTable.addCell(itemdesSec);
+
+                PdfPCell unitpricesec = new PdfPCell(new Phrase(String.valueOf("$" + invoice.getItem().get(i).getUnitPrice()), desFonttype));
+                unitpricesec.setBorder(0);
+//                unitpricesec.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                desTable.addCell(unitpricesec);
+
+
+                PdfPCell amountpricesec = new PdfPCell(new Phrase(String.valueOf("$" + invoice.getItem().get(i).getAmount()), desFonttype));
+                amountpricesec.setBorder(0);
+                amountpricesec.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                desTable.addCell(amountpricesec);
+
+
+
+                desTable.addCell(amountpricesec);
                 document.add(desTable);
             }
 
 
+            float totalcol [] =  {100, 100};
+
+            PdfPTable totaltable = new PdfPTable(totalcol);
+            totaltable.setSpacingBefore(60);
+
+            totaltable.setWidthPercentage(100);
+            totaltable.setHorizontalAlignment(Element.ALIGN_LEFT);
+//            totaltable.addCell("");
+//
+//            totaltable.addCell(" ");
+            PdfPCell totaldes = new PdfPCell(new Phrase("TOTAL", desFonttype));
+            totaldes.setBorder(0);
+            totaldes.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            totaltable.addCell(totaldes);
+            PdfPCell ttlamoutn = new PdfPCell(new Phrase(String.valueOf("$" + invoice.getTotal()), desFonttype));
+            ttlamoutn.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            ttlamoutn.setBorder(0);
+            totaltable.addCell(ttlamoutn);
+
+
+
+            document.add(totaltable);
+
+            Font thankyoufont = new Font(Font.FontFamily.TIMES_ROMAN, 35,
+                    Font.ITALIC,  new BaseColor(250, 47, 181));
+
+            Font signaturefont = new Font(Font.FontFamily.TIMES_ROMAN, 15,
+                    Font.ITALIC,  new BaseColor(250, 47, 181));
+
+            float [] thankyouspa = {100, 100};
+            PdfPTable thankyou = new PdfPTable(thankyouspa);
+            thankyou.setSpacingBefore(200);
+            thankyou.setWidthPercentage(100);
+
+            PdfPCell signature = new PdfPCell(new Phrase("Signature", signaturefont));
+            signature.setHorizontalAlignment(Element.ALIGN_LEFT);
+            thankyou.addCell(signature);
 
 
 
 
+
+            PdfPCell thankyoucell = new PdfPCell(new Phrase("Thank You",thankyoufont));
+            thankyoucell.setBorder(0);
+            thankyoucell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            thankyou.addCell(thankyoucell);
+
+
+
+            document.add(thankyou);
 
             document.close();
+
+
+            return document;
 
         }
     } , BLACK{
         @Override
-        public void ShowInvoice(String PDFName, Invoice invoice) {
+        public Document ShowInvoice(String PDFName, Invoice invoice) {
 
+            return null;
         }
     }, YELLOW {
         @Override
-        public void ShowInvoice(String PDFName, Invoice invoice) {
+        public Document ShowInvoice(String PDFName, Invoice invoice) {
 
+            return null;
         }
     };
 
@@ -250,8 +353,9 @@ public enum InvoiceTypes {
 
 
 
-    public void ShowInvoice(String PDFName, Invoice invoice) throws FileNotFoundException, DocumentException {
+    public Document ShowInvoice(String PDFName, Invoice invoice) throws IOException, DocumentException {
 
+        return  null;
     }
 
 }
